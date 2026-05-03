@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; }
+  body { background: #111; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+var c = document.getElementById('c')
+var ctx = c.getContext('2d')
+
+c.width = window.innerWidth
+c.height = window.innerHeight
+
+var ptcl = []
+
+c.addEventListener('click', function(e) {
+  var r = c.getBoundingClientRect()
+  var x = (e.clientX - r.left) * (c.width / r.width)
+  var y = (e.clientY - r.top) * (c.height / r.height)
+  for (var i = 0; i < 50; i++) {
+    var a = (i / 50) * Math.PI * 2
+    var s = Math.random() * 3 + 1
+    ptcl.push({ x:x, y:y, vx:Math.cos(a)*s, vy:Math.sin(a)*s, a:1 })
+  }
+})
+
+function loop() {
+  ctx.fillStyle = 'rgba(17,17,17,0.3)'
+  ctx.fillRect(0, 0, c.width, c.height)
+
+  ctx.globalAlpha = 0.15
+  ctx.fillStyle = 'white'
+  ctx.font = 'bold 60px sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText('Zalpa jelek', c.width/2, c.height/2)
+
+  for (var i = ptcl.length-1; i >= 0; i--) {
+    var p = ptcl[i]
+    p.x += p.vx
+    p.y += p.vy
+    p.vy += 0.08
+    p.a -= 0.02
+    if (p.a <= 0) { ptcl.splice(i,1); continue }
+    ctx.globalAlpha = p.a
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, 3, 0, Math.PI*2)
+    ctx.fillStyle = '#ffd93d'
+    ctx.fill()
+  }
+
+  ctx.globalAlpha = 1
+  requestAnimationFrame(loop)
+}
+
+loop()
+</script>
+</body>
+</html>
